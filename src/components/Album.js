@@ -13,7 +13,8 @@ class Album extends Component {
 	this.state = {
 		album : album,
 		currentSong: album.songs[0],
-		isPlaying: false
+		isPlaying: false,
+		hover: true
 	};
 	
 	this.audioElement = document.createElement('audio');
@@ -22,7 +23,7 @@ class Album extends Component {
  
   play(){
     this.audioElement.play();
-	this.setState({isPlaing: true });
+	this.setState({isPlaying: true });
   }
   
   pause(){
@@ -37,14 +38,25 @@ class Album extends Component {
 	
 	
   handleSongClick(song) {
-     const isSameSong = this.state.currentSong === song;
-     if (this.state.isPlaying && isSameSong) {
+    const isSameSong = this.state.currentSong === song;
+      if (this.state.isPlaying && isSameSong) {
        this.pause();
-     } else {
+     }else {
         if (!isSameSong) { this.setSong(song); }     
        this.play();
-     }
+    }
+  }
+   
+   onMouseEnter(song){
+     this.setState({hover: song});
    }
+   
+   onMouseLeave(song){
+     this.setState({hover: false});
+   }	 
+   
+   
+     
 
 	  
 	
@@ -60,6 +72,7 @@ class Album extends Component {
              <div id="release-info">{this.state.album.releaseInfo}</div>
            </div>
         </section> 
+		
 		<table id = "song-list">
 		  <colgroup>
 		    <col id = "song-number-column" />
@@ -67,10 +80,29 @@ class Album extends Component {
 			<col id = "song-duration-coumn" />
 	  	  </colgroup>
 		 
-		<tbody>
-	      {this.state.album.songs.map( (song, index) => 
-		    <tr className = "song" key = {index} onClick={() => this.handleSongClick(song)}>  
-				{index +1} {song.title} {song.duration}
+		<tbody> 
+	      {this.state.album.songs.map( (songs, index) => 
+		    <tr className = "songs" key = {index} 
+			onClick={() => this.handleSongClick(songs)}  
+			onMouseEnter ={() => this.onMouseEnter(songs)}
+			onMouseLeave ={() => this.onMouseLeave(songs)}>
+			
+			{(() =>{
+				
+			  if (this.state.hover === songs && this.state.hover !==this.state.currentSong){
+				return( <span className = "ion-md-play-circle"> </span>)
+             }else if (this.state.isPlaying && this.state.currentSong === songs){
+			    return( <span className = "ion-md-pause"> </span>) }
+              
+			  if(!this.state.isPlaying && this.state.currentSong === songs){	
+			    return <span className = "ion-md-play-circle"> </span>
+			 }else {return (index +1) };
+			}) ()}
+			
+			
+			
+			
+				 {songs.title} {songs.duration}
 		    </tr> )}
 		</tbody>
 				 
